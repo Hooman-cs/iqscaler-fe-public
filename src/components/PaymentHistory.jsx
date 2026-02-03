@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+// client/src/components/PaymentHistory.jsx
+
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPaymentHistory } from '../slices/paymentSlice';
 
 const PaymentHistory = () => {
   const dispatch = useDispatch();
   const { payments, loading, error } = useSelector((state) => state.payment);
+
+  // --- PAGINATION STATE ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Adjust rows per page here
 
   useEffect(() => {
     dispatch(fetchPaymentHistory());
@@ -18,10 +24,23 @@ const PaymentHistory = () => {
 
   if (loading) return <p className="p-4">Loading transactions...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
+  if (!payments || payments.length === 0) return <p className="p-4 text-gray-500">No payment history found.</p>;
+
+  // --- PAGINATION LOGIC ---
+  const totalPages = Math.ceil(payments.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPayments = payments.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
-    <div className="overflow-x-auto shadow-lg rounded-lg">
-      <table className="min-w-full divide-y divide-gray-200">
+    <div className="overflow-x-auto shadow-lg rounded-lg pb-4 bg-white">
+      <table className="min-w-full divide-y divide-gray-200 mb-4">
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">User</th>
@@ -32,7 +51,7 @@ const PaymentHistory = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {payments.map((p) => (
+          {currentPayments.map((p) => (
             <tr key={p._id} className="hover:bg-gray-50 text-sm">
               <td className="px-6 py-4 font-medium text-gray-900">{p.user?.username || 'N/A'}</td>
               <td className="px-6 py-4 text-gray-500">{new Date(p.createdAt).toLocaleString()}</td>
@@ -47,6 +66,31 @@ const PaymentHistory = () => {
           ))}
         </tbody>
       </table>
+
+      {/* --- PAGINATION CONTROLS --- */}
+      {payments.length > itemsPerPage && (
+        <div className="flex justify-between items-center px-6 pt-2 border-t border-gray-200">
+            <button
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 disabled:opacity-50 transition"
+            >
+                &larr; Previous Page
+            </button>
+            
+            <span className="text-sm text-gray-600">
+                Page <b>{currentPage}</b> of <b>{totalPages}</b>
+            </span>
+            
+            <button
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 disabled:opacity-50 transition"
+            >
+                Next Page &rarr;
+            </button>
+        </div>
+      )}
     </div>
   );
 };

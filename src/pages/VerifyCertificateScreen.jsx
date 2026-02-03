@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FaCheckCircle, FaExclamationTriangle, FaFileDownload, FaSearch } from 'react-icons/fa';
 
 const publicApi = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://iqscaler.azurewebsites.net/api',
   headers: {
     'Content-Type': 'application/json',
   },

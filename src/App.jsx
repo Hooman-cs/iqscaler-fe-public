@@ -23,6 +23,7 @@ const QuizScreen = lazy(() => import('./pages/QuizScreen'));
 const ResultScreen = lazy(() => import('./pages/ResultScreen'));
 const HistoryScreen = lazy(() => import('./pages/HistoryScreen'));
 const AdminDashboardScreen = lazy(() => import('./pages/AdminDashboardScreen'));
+const RefundPolicyScreen = lazy(() => import('./pages/RefundPolicyScreen'));
 
 function App() {
   return (
@@ -51,8 +52,9 @@ function App() {
               <Route path='/about' element={<AboutUsScreen />} />
               <Route path='/contact' element={<ContactUsScreen />} />
               <Route path='/privacy-policy' element={<PrivacyPolicyScreen />} />
-              <Route path='/terms' element={<TermsAndConditionsScreen />} />
+              <Route path='/terms-and-conditions' element={<TermsAndConditionsScreen />} />
               <Route path='/verify-certificate/:id' element={<VerifyCertificateScreen />} />
+              <Route path='/refund-policy' element={<RefundPolicyScreen />} />
               
               <Route path='' element={<PrivateRoute />}>
                 <Route path='/dashboard' element={<DashboardScreen />} />

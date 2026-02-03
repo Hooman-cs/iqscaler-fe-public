@@ -41,12 +41,23 @@ const Footer = () => {
             </nav>
           </div>
 
+          {/* Column 3: Legal Links
+          <div className="flex flex-col items-center md:items-start">
+            <h4 className="font-bold text-gray-900 mb-4 uppercase tracking-widest text-xs">Legal</h4>
+            <nav className="flex flex-col space-y-3 text-sm font-medium items-center md:items-start">
+              <Link to="/privacy-policy" className="text-gray-600 hover:text-blue-600 transition-colors">Privacy Policy</Link>
+              <Link to="/terms-and-conditions" className="text-gray-600 hover:text-blue-600 transition-colors">Terms & Conditions</Link>
+            </nav>
+          </div> */}
+
           {/* Column 3: Legal Links */}
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-bold text-gray-900 mb-4 uppercase tracking-widest text-xs">Legal</h4>
             <nav className="flex flex-col space-y-3 text-sm font-medium items-center md:items-start">
               <Link to="/privacy-policy" className="text-gray-600 hover:text-blue-600 transition-colors">Privacy Policy</Link>
-              <Link to="/terms" className="text-gray-600 hover:text-blue-600 transition-colors">Terms & Conditions</Link>
+              <Link to="/terms-and-conditions" className="text-gray-600 hover:text-blue-600 transition-colors">Terms & Conditions</Link>
+              {/* New Link Added Here */}
+              <Link to="/refund-policy" className="text-gray-600 hover:text-blue-600 transition-colors">Refund Policy</Link>
             </nav>
           </div>
         </div>

@@ -114,6 +114,7 @@ return (
           <Link to='/' onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-medium">Home</Link>
           <Link to='/faq' onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-medium">FAQ</Link>
           <Link to='/about' onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-medium">About Us</Link>
+          <Link to='/contact' onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-medium">Contact Us</Link>
           <hr className="border-gray-100" />
           {/* Mobile Auth Links similarly updated to dark text */}
           {userInfo ? (
