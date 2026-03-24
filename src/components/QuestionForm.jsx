@@ -18,7 +18,6 @@ const QuestionForm = ({ question, onSuccess }) => {
         success,
         availableCategories,
         categoryLoading,
-        categoryError
     } = useSelector((state) => state.question);
 
     const [questionText, setQuestionText] = useState(question?.text || '');

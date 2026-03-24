@@ -1,91 +1,25 @@
 // client/src/components/Leaderboard.jsx
-
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { FaTrophy, FaCalendarAlt } from 'react-icons/fa';
-
-const RankCard = ({ rank, user }) => {
-    const { username, maxScore, testDate } = user; 
-    
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        
-        // Responsive date formatting
-        const isMobile = window.innerWidth < 640;
-        const options = isMobile 
-            ? { month: 'short', day: 'numeric', year: '2-digit' } 
-            : { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
-            
-        return date.toLocaleDateString(undefined, options);
-    };
-
-    let rankColor = 'text-gray-600';
-    let trophyColor = 'text-gray-400';
-    let cardStyle = 'bg-white border-gray-200';
-
-    if (rank === 1) {
-        rankColor = 'text-yellow-600';
-        trophyColor = 'text-yellow-500';
-        cardStyle = 'bg-yellow-50 border-yellow-300 shadow-lg sm:scale-[1.03] z-10'; // Scale only on sm+ screens
-    } else if (rank === 2) {
-        rankColor = 'text-gray-500';
-        trophyColor = 'text-gray-500';
-        cardStyle = 'bg-gray-100 border-gray-300 shadow-md';
-    } else if (rank === 3) {
-        rankColor = 'text-orange-500';
-        trophyColor = 'text-orange-400';
-        cardStyle = 'bg-orange-50 border-orange-300 shadow-sm';
-    }
-    
-    return (
-        <div className={`flex items-center p-3 md:p-4 mb-3 rounded-lg border-2 transition-all duration-300 ${cardStyle}`}>
-            
-            {/* 1. Rank & Trophy - Smaller on mobile */}
-            <div className={`text-xl md:text-3xl font-extrabold mr-2 md:mr-4 w-6 md:w-10 flex-shrink-0 ${rankColor}`}>
-                {rank}
-            </div>
-            <FaTrophy className={`text-lg md:text-2xl mr-3 md:mr-4 ${trophyColor} flex-shrink-0`} />
-
-            {/* 2. User Details - min-w-0 allows the truncate to work */}
-            <div className="flex-grow min-w-0">
-                <p className="text-sm md:text-lg font-bold text-gray-800 truncate uppercase tracking-tight">
-                    {username}
-                </p>
-                <p className="text-[10px] md:text-sm text-gray-500 flex items-center mt-1">
-                    <FaCalendarAlt className="mr-1 flex-shrink-0" />
-                    <span className="truncate">{formatDate(testDate)}</span>
-                </p>
-            </div>
-
-            {/* 3. Score - Compact on mobile */}
-            <div className="flex-shrink-0 text-right ml-2">
-                <p className="text-xl md:text-2xl font-black text-green-600 leading-none">
-                    {Math.floor(maxScore)}
-                </p>
-                <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase">IQ</p>
-            </div>
-        </div>
-    );
-};
+import { FaTrophy } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Leaderboard = () => {
-    const { leaderboard, leaderboardLoading, leaderboardError } = useSelector(
-        (state) => state.result
-    );
+    // FIXED: Selecting from 'state.result' to properly grab the data Redux is fetching!
+    const resultState = useSelector((state) => state.result || state.leaderboard) || {};
+    const { leaderboard = [], loading = false, error: leaderboardError = null } = resultState;
 
-    if (leaderboardLoading) {
+    if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 space-y-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <p className="text-blue-600 font-medium animate-pulse">Calculating Rankings...</p>
+            <div className="flex justify-center items-center h-48 bg-white rounded-2xl shadow-xl border border-gray-100">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
-
+    
     if (leaderboardError) {
         return (
-            <div className="text-center p-4 md:p-6 text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            <div className="bg-red-50 text-red-600 p-6 text-center rounded-2xl border border-red-200 shadow-lg">
                 <p className="font-bold">Leaderboard Unavailable</p>
                 <p className="text-sm">{leaderboardError}</p>
             </div>
@@ -100,23 +34,63 @@ const Leaderboard = () => {
         );
     }
 
+    // Only slice top 5 for the homepage widget
+    const top5 = leaderboard.slice(0, 5);
+
     return (
         <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl border-t-8 border-blue-600">
-            <h3 className="text-xl md:text-3xl font-black text-center text-gray-800 mb-8 flex items-center justify-center uppercase tracking-tighter">
+            <h3 className="text-xl md:text-3xl font-black text-center text-gray-800 mb-6 flex items-center justify-center uppercase tracking-tighter">
                 <FaTrophy className="text-yellow-500 mr-2 md:mr-3 text-2xl md:text-4xl drop-shadow-sm"/> 
                 Hall of Fame
             </h3>
+            
+            {/* NEW: Tabular Format */}
+            <div className="overflow-x-auto rounded-lg border border-gray-200 mb-2">
+                <table className="min-w-full divide-y divide-gray-200 text-center">
+                    <thead className="bg-slate-50">
+                        <tr>
+                            <th className="px-3 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Rank</th>
+                            <th className="px-3 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-left">User</th>
+                            <th className="px-3 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">IQ Score</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 bg-white">
+                        {top5.map((user, index) => {
+                            const rank = index + 1;
+                            let rankStyle = "text-gray-600 font-bold";
+                            let bgStyle = "hover:bg-blue-50 transition";
+                            
+                            if (rank === 1) { 
+                                rankStyle = "text-yellow-600 font-black text-lg"; 
+                                bgStyle = "bg-yellow-50 hover:bg-yellow-100"; 
+                            } else if (rank === 2) { 
+                                rankStyle = "text-gray-400 font-black text-lg"; 
+                                bgStyle = "bg-gray-50 hover:bg-gray-100"; 
+                            } else if (rank === 3) { 
+                                rankStyle = "text-orange-500 font-black text-lg"; 
+                                bgStyle = "bg-orange-50 hover:bg-orange-100"; 
+                            }
 
-            <div className="space-y-1">
-                {leaderboard.map((user, index) => (
-                    <RankCard key={user.userId || index} rank={index + 1} user={user} /> 
-                ))}
+                            return (
+                                <tr key={user.userId || index} className={bgStyle}>
+                                    <td className={`px-3 py-3 ${rankStyle}`}>#{rank}</td>
+                                    <td className="px-3 py-3 font-semibold text-gray-800 capitalize text-left truncate max-w-[120px]">
+                                        {user.username || 'Anonymous'}
+                                    </td>
+                                    <td className={`px-3 py-3 font-black ${rank <= 3 ? rankStyle : 'text-blue-600 text-lg'}`}>
+                                        {user.iqScore}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </div>
             
-            <div className="mt-6 pt-4 border-t border-gray-100">
-                <p className="text-center text-[10px] md:text-xs text-gray-400 leading-relaxed uppercase font-semibold tracking-widest">
-                    Highest verified score per user
-                </p>
+            <div className="mt-4 text-center">
+                <Link to="/leaderboard" className="text-blue-600 hover:text-blue-800 font-bold transition duration-150 inline-flex items-center">
+                    View Full Leaderboard <span className="ml-1">&rarr;</span>
+                </Link>
             </div>
         </div>
     );

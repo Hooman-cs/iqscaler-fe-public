@@ -4,7 +4,8 @@ import axios from 'axios';
 const api = axios.create({
   // Base URL for the Express backend
   // When running locally, the backend is on port 5000
-  baseURL: 'https://iqscaler.azurewebsites.net/api', 
+  baseURL: 'https://iqscaler.azurewebsites.net/api',
+  // baseURL: 'http://localhost:5000/api' , 
   headers: {
     'Content-Type': 'application/json',
   },
